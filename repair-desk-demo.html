@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>設備不具合・修理受付</title>
+<style>
+:root{--bg:#f3f5f8;--card:#fff;--ink:#1c2733;--sub:#6b7a8c;--line:#e2e7ee;--acc:#0e7490;--acc2:#e0f2f7;
+--red:#d9480f;--amb:#d99200;--grn:#2b9348;--blu:#2563eb;--r:14px}
+@media(prefers-color-scheme:dark){:root{--bg:#10161d;--card:#18212b;--ink:#e8edf3;--sub:#8fa0b2;--line:#27323e;--acc:#38bdd8;--acc2:#12303a;
+--red:#ff7a45;--amb:#f0b429;--grn:#52c477;--blu:#6c9bff}}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 "Hiragino Sans","Noto Sans JP","Yu Gothic UI",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+#app{max-width:680px;margin:0 auto;padding:0 14px 96px}
+header{padding:20px 2px 10px}
+h1{font-size:20px;font-weight:800;letter-spacing:.02em}
+header p{color:var(--sub);font-size:12.5px}
+button,input,select,textarea{font:inherit;color:inherit}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px}
+.chip{flex:1 0 auto;min-width:76px;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:8px 12px;cursor:pointer}
+.chip b{display:block;font-size:22px;line-height:1.2}
+.chip span{font-size:12px;color:var(--sub)}
+.chip.on{border-color:var(--acc);background:var(--acc2)}
+.search{width:100%;padding:10px 14px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--card);margin-bottom:12px}
+.item{background:var(--card);border-radius:var(--r);padding:13px 14px 13px 18px;margin-bottom:10px;position:relative;cursor:pointer;border:1px solid var(--line);overflow:hidden}
+.item:before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--u)}
+.item h3{font-size:16px;font-weight:700;display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.item .d{color:var(--sub);font-size:13px;margin:2px 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;color:var(--sub);align-items:center}
+.tag{padding:2px 9px;border-radius:99px;font-weight:700;font-size:12px;color:#fff}
+.s0{background:var(--red)}.s1{background:var(--blu)}.s2{background:var(--grn)}
+.u高{--u:var(--red)}.u中{--u:var(--amb)}.u低{--u:var(--grn)}
+.empty{text-align:center;color:var(--sub);padding:48px 12px}
+.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:8px 14px calc(8px + env(safe-area-inset-bottom,0px))}
+nav div{max-width:680px;margin:0 auto;display:flex;gap:10px;align-items:center}
+nav button{flex:1;border:0;background:none;padding:8px;border-radius:12px;color:var(--sub);font-weight:700;cursor:pointer}
+nav button.on{color:var(--acc);background:var(--acc2)}
+nav .add{flex:1.4;background:var(--acc);color:#fff;font-size:15px;padding:12px}
+.seg{display:flex;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:3px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;padding:7px;border-radius:9px;font-weight:700;color:var(--sub);cursor:pointer}
+.seg button.on{background:var(--acc);color:#fff}
+.row{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+.row select{flex:1;padding:9px;border:1.5px solid var(--line);border-radius:12px;background:var(--card)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
+.kpi span{font-size:12px;color:var(--sub)}.kpi b{display:block;font-size:20px;line-height:1.3}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.panel h2{font-size:14px;margin-bottom:10px}
+.legend{display:flex;gap:12px;font-size:12px;color:var(--sub);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+svg text{fill:var(--sub);font-size:11px}
+.hb{display:grid;grid-template-columns:96px 1fr 28px;gap:8px;align-items:center;margin-bottom:7px;font-size:13px}
+.hb em{font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb div{height:12px;background:var(--bg);border-radius:6px;overflow:hidden}.hb div i{display:block;height:100%;background:var(--acc);border-radius:6px}
+.hb b{text-align:right}
+.mask{position:fixed;inset:0;background:rgba(10,18,26,.5);display:flex;align-items:flex-end;justify-content:center;z-index:9}
+.sheet{background:var(--card);width:100%;max-width:680px;max-height:92%;overflow:auto;border-radius:22px 22px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.sheet{animation:none}}
+.sheet h2{font-size:18px;margin-bottom:12px}
+label{display:block;font-size:12.5px;font-weight:700;color:var(--sub);margin:12px 0 4px}
+.sheet input,.sheet select,.sheet textarea{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg)}
+.sheet textarea{min-height:84px;resize:vertical}
+.sheet :focus,.search:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.pick{display:flex;gap:8px}
+.pick label{flex:1;margin:0}
+.pick input{display:none}
+.pick span{display:block;text-align:center;padding:10px;border:1.5px solid var(--line);border-radius:12px;font-weight:700;color:var(--ink);cursor:pointer}
+.pick input:checked+span{color:#fff;background:var(--u);border-color:var(--u)}
+.btns{display:flex;gap:10px;margin-top:18px}
+.btn{flex:1;border:0;border-radius:12px;padding:13px;font-weight:700;cursor:pointer;background:var(--bg);color:var(--ink)}
+.btn.p{background:var(--acc);color:#fff}.btn.d{background:none;color:var(--red);flex:0 0 auto}
+.log{font-size:12.5px;color:var(--sub);border-left:2px solid var(--line);padding-left:10px;margin:10px 0 0}
+.log p{margin:3px 0}
+.kv{display:grid;grid-template-columns:70px 1fr;gap:4px 8px;font-size:14px}.kv dt{color:var(--sub);font-size:12.5px}.kv dd{margin:0;white-space:pre-wrap;word-break:break-word}
+</style></head>
+<body><div id="app"></div>
+<script src="webxdc.js"></script>
+<script>
+// ブラウザ単体で開いた場合の簡易モック
+if(!window.webxdc){let L,U=[];try{U=JSON.parse(localStorage.wx||'[]')}catch(e){}
+window.webxdc={selfName:'テスト',selfAddr:'test@example.org',
+setUpdateListener:(cb)=>{L=cb;U.forEach(u=>cb(u));return Promise.resolve()},
+sendUpdate:(u)=>{U.push(u);try{localStorage.wx=JSON.stringify(U)}catch(e){}L&&L(u)}}}
+
+const ST=['未対応','対応中','完了'], UR=['高','中','低'], UC={高:'var(--red)',中:'var(--amb)',低:'var(--grn)'};
+const me=webxdc.selfName||'メンバー';
+let items={}, view='list', filt='all', q='', per='month', year=new Date().getFullYear(), sheet=null, delArm=false;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const yen=n=>'¥'+Math.round(n).toLocaleString('ja-JP');
+const fmt=t=>{const d=new Date(t);return (d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+
+// ---- 共有データ(全メンバーに同じ順序で届く更新を畳み込む) ----
+function apply(p){
+  if(p.t==='add'){items[p.item.id]=p.item}
+  else if(p.t==='set'){const it=items[p.id];if(!it)return;
+    it.status=p.status;if(p.cost!=null&&p.cost!=='')it.cost=+p.cost;
+    it.log.push({ts:p.ts,by:p.by,status:p.status,note:p.note||''})}
+  else if(p.t==='del'){delete items[p.id]}
+}
+let raf;webxdc.setUpdateListener(u=>{apply(u.payload);cancelAnimationFrame(raf);raf=requestAnimationFrame(render)},0);
+function send(payload,info){
+  const open=Object.values(items).filter(i=>i.status!==2).length;
+  webxdc.sendUpdate({payload,info,summary:'未完了 '+(open+(payload.t==='add'?1:0))+'件'},info||'');
+}
+
+// ---- 描画 ----
+function render(){
+  const all=Object.values(items);
+  let h='<header><h1>設備不具合・修理受付</h1><p>グループ全員で共有されます（'+esc(me)+' としてログイン中）</p></header>';
+  if(view==='list')h+=listView(all);else h+=statView(all);
+  h+='<nav><div><button class="'+(view==='list'?'on':'')+'" data-v="list">一覧</button><button class="add" data-act="new">＋ 不具合を登録</button><button class="'+(view==='stat'?'on':'')+'" data-v="stat">集計</button></div></nav>';
+  const keep=$('.search')&&document.activeElement===$('.search');
+  $('#app').innerHTML=h+(sheet?sheetHtml():'');
+  if(keep){const s=$('.search');s.focus();s.setSelectionRange(q.length,q.length)}
+}
+function listView(all){
+  const c=[all.length,...ST.map((_,i)=>all.filter(x=>x.status===i).length)];
+  let h='<div class="chips">'+['すべて',...ST].map((n,i)=>'<button class="chip '+(filt==(i?i-1:'all')?'on':'')+'" data-f="'+(i?i-1:'all')+'"><b>'+c[i]+'</b><span>'+n+'</span></button>').join('')+'</div>';
+  h+='<input class="search" type="search" placeholder="設備・場所・内容で検索" value="'+esc(q)+'">';
+  let l=all.filter(x=>(filt==='all'||x.status==filt)&&(!q||[x.fac,x.place,x.desc,x.by].join(' ').includes(q)));
+  l.sort((a,b)=>((a.status===2)-(b.status===2))||b.date.localeCompare(a.date)||b.ts-a.ts);
+  if(!l.length)return h+'<div class="empty"><b>'+(all.length?'該当する受付はありません':'まだ受付がありません')+'</b>'+(all.length?'条件を変えてみてください':'下の「不具合を登録」から最初の1件を追加しましょう')+'</div>';
+  return h+l.map(x=>'<div class="item u'+x.urg+'" data-id="'+x.id+'"><h3><span>'+esc(x.fac)+'</span><span class="tag s'+x.status+'">'+ST[x.status]+'</span></h3><div class="d">'+esc(x.desc)+'</div><div class="meta"><span>'+esc(x.place||'場所未入力')+'</span><span>・緊急度 '+x.urg+'</span><span>・'+x.date.replace(/-/g,'/')+'</span><span>・'+esc(x.by)+'</span></div></div>').join('');
+}
+function bucket(all){
+  const key=per==='month'?d=>+d.slice(5,7):d=>+d.slice(0,4);
+  const src=per==='month'?all.filter(x=>x.date.startsWith(year)):all;
+  let keys;
+  if(per==='month')keys=[...Array(12)].map((_,i)=>i+1);
+  else{const ys=src.map(x=>+x.date.slice(0,4));const mn=Math.min(...ys,year),mx=Math.max(...ys,year);keys=[];for(let y=Math.max(mn,mx-5);y<=mx;y++)keys.push(y)}
+  return {src,keys,key};
+}
+function statView(all){
+  const ys=[...new Set([year,...all.map(x=>+x.date.slice(0,4))])].sort((a,b)=>b-a);
+  const {src,keys,key}=bucket(all);
+  const done=src.filter(x=>x.status===2).length, cost=src.reduce((s,x)=>s+(x.cost||0),0);
+  let h='<div class="seg"><button class="'+(per==='month'?'on':'')+'" data-p="month">月ごと</button><button class="'+(per==='year'?'on':'')+'" data-p="year">年ごと</button></div>';
+  if(per==='month')h+='<div class="row"><select id="yr">'+ys.map(y=>'<option '+(y==year?'selected':'')+'>'+y+'</option>').join('')+'</select><span style="color:var(--sub)">年の記録</span></div>';
+  h+='<div class="kpis"><div class="kpi"><span>受付件数</span><b>'+src.length+'件</b></div><div class="kpi"><span>完了率</span><b>'+(src.length?Math.round(done/src.length*100):0)+'%</b></div><div class="kpi"><span>修理費合計</span><b>'+yen(cost)+'</b></div></div>';
+  const lab=k=>per==='month'?k+'月':k;
+  const cnt=keys.map(k=>({l:lab(k),p:UR.map(u=>src.filter(x=>key(x.date)===k&&x.urg===u).length)}));
+  h+='<div class="panel"><h2>受付件数の推移（緊急度別）</h2>'+bars(cnt,UR.map(u=>UC[u]),v=>v)+'<div class="legend">'+UR.map(u=>'<span><i style="background:'+UC[u]+'"></i>'+u+'</span>').join('')+'</div></div>';
+  const cs=keys.map(k=>({l:lab(k),p:[src.filter(x=>key(x.date)===k).reduce((s,x)=>s+(x.cost||0),0)]}));
+  h+='<div class="panel"><h2>修理費用の推移</h2>'+bars(cs,['var(--acc)'],v=>v>=10000?Math.round(v/1000)/10+'万':v)+'</div>';
+  const by={};src.forEach(x=>by[x.fac]=(by[x.fac]||0)+1);
+  const top=Object.entries(by).sort((a,b)=>b[1]-a[1]).slice(0,6),mx=top.length?top[0][1]:1;
+  h+='<div class="panel"><h2>不具合が多い設備</h2>'+(top.length?top.map(([n,v])=>'<div class="hb"><em>'+esc(n)+'</em><div><i style="width:'+v/mx*100+'%"></i></div><b>'+v+'</b></div>').join(''):'<p style="color:var(--sub);font-size:13px">この期間の記録はありません</p>')+'</div>';
+  return h;
+}
+function bars(data,cols,f){
+  const W=600,H=190,L=30,B=24,T=16,n=data.length,bw=(W-L)/n,max=Math.max(1,...data.map(d=>d.p.reduce((a,b)=>a+b,0)));
+  let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img">';
+  [0,.5,1].forEach(r=>{const y=T+(H-B-T)*(1-r);s+='<line x1="'+L+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)"/><text x="0" y="'+(y+4)+'">'+f(Math.round(max*r*10)/10)+'</text>'});
+  data.forEach((d,i)=>{let y=H-B;const x=L+i*bw+bw*.18,w=bw*.64,tot=d.p.reduce((a,b)=>a+b,0);
+    d.p.forEach((v,j)=>{if(!v)return;const h=v/max*(H-B-T);y-=h;s+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+cols[j]+'" rx="'+(j===d.p.length-1||true?3:0)+'"/>'});
+    if(tot)s+='<text x="'+(x+w/2)+'" y="'+(y-4)+'" text-anchor="middle" style="fill:var(--ink)">'+f(tot)+'</text>';
+    s+='<text x="'+(x+w/2)+'" y="'+(H-6)+'" text-anchor="middle">'+d.l+'</text>'});
+  return s+'</svg>';
+}
+function sheetHtml(){
+  if(sheet==='new'){
+    const facs=[...new Set(Object.values(items).map(x=>x.fac))];
+    return '<div class="mask" data-act="close"><div class="sheet"><h2>不具合を登録</h2>'+
+    '<label>設備名（必須）</label><input id="f_fac" list="facs" placeholder="例：2階トイレの水栓" maxlength="60"><datalist id="facs">'+facs.map(f=>'<option value="'+esc(f)+'">').join('')+'</datalist>'+
+    '<label>場所</label><input id="f_place" placeholder="例：本館2階" maxlength="60">'+
+    '<label>不具合の内容</label><textarea id="f_desc" placeholder="いつ・どんな状態か" maxlength="500"></textarea>'+
+    '<label>緊急度</label><div class="pick">'+UR.map((u,i)=>'<label style="--u:'+UC[u]+'"><input type="radio" name="urg" value="'+u+'" '+(i===1?'checked':'')+'><span>'+u+'</span></label>').join('')+'</div>'+
+    '<label>発生日</label><input id="f_date" type="date" value="'+today()+'">'+
+    '<div class="btns"><button class="btn" data-act="close">キャンセル</button><button class="btn p" data-act="save">登録する</button></div></div></div>';
+  }
+  const x=items[sheet];if(!x){sheet=null;return ''}
+  return '<div class="mask" data-act="close"><div class="sheet"><h2>'+esc(x.fac)+' <span class="tag s'+x.status+'" style="font-size:12px;vertical-align:middle">'+ST[x.status]+'</span></h2>'+
+  '<dl class="kv"><dt>場所</dt><dd>'+esc(x.place||'―')+'</dd><dt>内容</dt><dd>'+esc(x.desc||'―')+'</dd><dt>緊急度</dt><dd style="color:'+UC[x.urg]+';font-weight:700">'+x.urg+'</dd><dt>発生日</dt><dd>'+x.date.replace(/-/g,'/')+'</dd><dt>報告者</dt><dd>'+esc(x.by)+'</dd>'+(x.cost?'<dt>修理費</dt><dd>'+yen(x.cost)+'</dd>':'')+'</dl>'+
+  '<label>状況を更新</label><div class="pick" style="--u:var(--acc)">'+ST.map((s,i)=>'<label><input type="radio" name="st" value="'+i+'" '+(i===x.status?'checked':'')+'><span>'+s+'</span></label>').join('')+'</div>'+
+  '<label>修理費用（円・任意）</label><input id="f_cost" type="number" inputmode="numeric" min="0" placeholder="'+(x.cost||'例：12000')+'">'+
+  '<label>メモ（任意）</label><input id="f_note" maxlength="200" placeholder="例：業者に連絡済み">'+
+  '<div class="log">'+x.log.map(l=>'<p>'+fmt(l.ts)+' '+esc(l.by)+'：'+ST[l.status]+(l.note?'（'+esc(l.note)+'）':'')+'</p>').join('')+'</div>'+
+  '<div class="btns"><button class="btn d" data-act="del">'+(delArm?'本当に削除':'削除')+'</button><button class="btn" data-act="close">閉じる</button><button class="btn p" data-act="upd">更新する</button></div></div></div>';
+}
+
+// ---- 操作 ----
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-v],[data-f],[data-p],[data-act],[data-id]');if(!t)return;
+  const D=t.dataset;
+  if(D.act==='close'){if(e.target.closest('.sheet')&&!e.target.closest('button'))return;sheet=null;delArm=false;return render()}
+  if(e.target.closest('.sheet')&&!D.act)return;
+  if(D.v){view=D.v}else if(D.f){filt=D.f}else if(D.p){per=D.p}
+  else if(D.id){sheet=D.id;delArm=false}
+  else if(D.act==='new'){sheet='new'}
+  else if(D.act==='save'){
+    const fac=$('#f_fac').value.trim();if(!fac){$('#f_fac').focus();$('#f_fac').style.borderColor='var(--red)';return}
+    const id=Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts=Date.now();
+    const item={id,ts,fac,place:$('#f_place').value.trim(),desc:$('#f_desc').value.trim(),urg:document.querySelector('[name=urg]:checked').value,date:$('#f_date').value||today(),by:me,status:0,log:[{ts,by:me,status:0,note:'受付'}]};
+    sheet=null;send({t:'add',item},me+'：不具合を登録「'+fac+'」（緊急度 '+item.urg+'）');return;
+  }
+  else if(D.act==='upd'){
+    const x=items[sheet],st=+document.querySelector('[name=st]:checked').value,cost=$('#f_cost').value,note=$('#f_note').value.trim();
+    const id=sheet;sheet=null;
+    send({t:'set',id,status:st,cost,note,by:me,ts:Date.now()},me+'：「'+x.fac+'」を'+ST[st]+'に更新'+(cost?'（'+yen(cost)+'）':''));return;
+  }
+  else if(D.act==='del'){
+    if(!delArm){delArm=true;return render()}
+    const x=items[sheet],id=sheet;sheet=null;delArm=false;send({t:'del',id},me+'：「'+x.fac+'」の受付を削除');return;
+  }
+  render();
+});
+document.addEventListener('input',e=>{if(e.target.classList.contains('search')){q=e.target.value;render()}});
+document.addEventListener('change',e=>{if(e.target.id==='yr'){year=+e.target.value;render()}});
+render();
+</script></body></html>
